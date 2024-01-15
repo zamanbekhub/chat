@@ -6,7 +6,6 @@ import (
 	v1 "chat/internal/delivery/http/v1"
 	"chat/internal/service"
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
@@ -43,7 +42,7 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 	//app.Use(p.Instrument())
 
 	app.Use(middleware.Cors())
-	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	//app.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	h.initAPI(app)
 	return app, nil
