@@ -8,7 +8,7 @@
         "title": "chat",
         "contact": {}
     },
-    "host": "127.0.0.1:8001",
+    "host": "127.0.0.1:8000",
     "basePath": "/chat",
     "paths": {
         "/api/v1/chat": {
