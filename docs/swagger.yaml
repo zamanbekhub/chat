@@ -3,13 +3,17 @@ definitions:
   model.Chat:
     properties:
       chat_id:
-        type: integer
+        type: string
+      createdAt:
+        type: string
       description:
         type: string
       name:
         type: string
       type_code:
         $ref: '#/definitions/model.ChatTypeCode'
+      updatedAt:
+        type: string
     type: object
   model.ChatTypeCode:
     enum:
@@ -21,17 +25,6 @@ definitions:
     - CHAT_TYPE_CODE_PERSONAL
     - CHAT_TYPE_CODE_GROUP
     - CHAT_TYPE_CODE_CHANNEL
-  schema.ChatCreate:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-      type_code:
-        $ref: '#/definitions/model.ChatTypeCode'
-    required:
-    - type_code
-    type: object
   schema.Empty:
     type: object
   schema.MessagePush:
@@ -74,7 +67,7 @@ paths:
         in: query
         name: chat_id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -89,16 +82,16 @@ paths:
       summary: Получить всех пользователей
       tags:
       - chat
-    post:
+  /api/v1/chat/all:
+    get:
       consumes:
       - application/json
       parameters:
-      - description: Создание пользователыя
-        in: body
-        name: data
+      - description: User ID
+        in: query
+        name: user_id
         required: true
-        schema:
-          $ref: '#/definitions/schema.ChatCreate'
+        type: string
       produces:
       - application/json
       responses:
@@ -110,7 +103,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: Создание пользователя
+      summary: Получить всех пользователей
       tags:
       - chat
   /api/v1/message/push:

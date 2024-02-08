@@ -30,7 +30,7 @@ const docTemplate = `{
                 "summary": "Получить всех пользователей",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Chat ID",
                         "name": "chat_id",
                         "in": "query",
@@ -51,8 +51,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/api/v1/chat/all": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -62,16 +64,14 @@ const docTemplate = `{
                 "tags": [
                     "chat"
                 ],
-                "summary": "Создание пользователя",
+                "summary": "Получить всех пользователей",
                 "parameters": [
                     {
-                        "description": "Создание пользователыя",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/schema.ChatCreate"
-                        }
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -135,7 +135,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "chat_id": {
-                    "type": "integer"
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -145,6 +148,9 @@ const docTemplate = `{
                 },
                 "type_code": {
                     "$ref": "#/definitions/model.ChatTypeCode"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -160,23 +166,6 @@ const docTemplate = `{
                 "CHAT_TYPE_CODE_GROUP",
                 "CHAT_TYPE_CODE_CHANNEL"
             ]
-        },
-        "schema.ChatCreate": {
-            "type": "object",
-            "required": [
-                "type_code"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type_code": {
-                    "$ref": "#/definitions/model.ChatTypeCode"
-                }
-            }
         },
         "schema.Empty": {
             "type": "object"

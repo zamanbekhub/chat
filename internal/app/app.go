@@ -24,7 +24,7 @@ import (
 func Run(cfg *config.Config) {
 	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 
-	scyllaCluster := scylla.NewScyllaDBConnection(gocql.Quorum, "catalog", "scylla-node1", "scylla-node2", "scylla-node3")
+	scyllaCluster := scylla.NewScyllaDBConnection(gocql.Quorum, "chat", "scylla-node1", "scylla-node2", "scylla-node3")
 	session, err := scyllaCluster.GetConnection()
 	if err != nil {
 		logger.Fatal("unable to connect to scylla", zap.Error(err))

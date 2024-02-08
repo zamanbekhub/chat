@@ -12,7 +12,7 @@ type T any
 type QueryBuilder[t T] interface {
 	Select(ctx context.Context, dataToGet *t) ([]t, error)
 	Get(ctx context.Context, dataToGet *t) (*t, error)
-	SelectAll(ctx context.Context) ([]t, error)
+	//SelectAll(ctx context.Context) ([]t, error)
 	Insert(ctx context.Context, insertData *t) error
 	Delete(ctx context.Context, dataToBeDeleted *t) error
 }

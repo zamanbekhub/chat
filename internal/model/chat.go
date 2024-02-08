@@ -13,22 +13,20 @@ const (
 type Chat struct {
 	TimestampMixin
 	ChatID      string       `db:"chat_id" json:"chat_id"`
-	UserID      string       `db:"user_id" json:"user_id"`
-	RoleID      string       `db:"role_id" json:"role_id"`
 	Name        string       `db:"name" json:"name"`
 	Description string       `db:"description" json:"description"`
 	TypeCode    ChatTypeCode `db:"type_code" json:"type_code"`
 }
 
-func NewChatTable() *table.Table {
+func NewChatTable() table.Table {
 	m := table.Metadata{
-		Name: "tracking_data",
+		Name: "chat",
 		Columns: []string{
-			"first_name", "last_name", "timestamp", "heat",
-			"location", "speed", "telepathy_powers",
+			"chat_id", "name",
+			"description", "type_code",
+			"created_at", "updated_at",
 		},
-		PartKey: []string{"first_name", "last_name"},
-		SortKey: []string{"timestamp"},
+		PartKey: []string{"user_id"},
 	}
-	return table.New(m)
+	return *table.New(m)
 }
