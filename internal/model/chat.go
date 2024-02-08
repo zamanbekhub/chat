@@ -1,5 +1,7 @@
 package model
 
+import "github.com/scylladb/gocqlx/table"
+
 type ChatTypeCode = string
 
 const (
@@ -9,12 +11,24 @@ const (
 )
 
 type Chat struct {
-	ChatID      uint         `gorm:"primaryKey;chat_id" json:"chat_id"`
-	Name        string       `gorm:"name" json:"name"`
-	Description string       `gorm:"description" json:"description"`
-	TypeCode    ChatTypeCode `gorm:"type_code" json:"type_code"`
+	TimestampMixin
+	ChatID      string       `db:"chat_id" json:"chat_id"`
+	UserID      string       `db:"user_id" json:"user_id"`
+	RoleID      string       `db:"role_id" json:"role_id"`
+	Name        string       `db:"name" json:"name"`
+	Description string       `db:"description" json:"description"`
+	TypeCode    ChatTypeCode `db:"type_code" json:"type_code"`
 }
 
-func (Chat) TableName() string {
-	return "chat.chat"
+func NewChatTable() *table.Table {
+	m := table.Metadata{
+		Name: "tracking_data",
+		Columns: []string{
+			"first_name", "last_name", "timestamp", "heat",
+			"location", "speed", "telepathy_powers",
+		},
+		PartKey: []string{"first_name", "last_name"},
+		SortKey: []string{"timestamp"},
+	}
+	return table.New(m)
 }

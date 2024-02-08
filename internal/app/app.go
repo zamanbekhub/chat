@@ -7,10 +7,12 @@ import (
 	"chat/internal/repository"
 	httpServer "chat/internal/server"
 	"chat/internal/service"
-	"chat/pkg/db/postgresql"
+	"chat/pkg/db/scylla"
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gocql/gocql"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
@@ -22,12 +24,14 @@ import (
 func Run(cfg *config.Config) {
 	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 
-	postgresDB, err := postgresql.NewDB(cfg.Database.PostgreDSN)
+	scyllaCluster := scylla.NewScyllaDBConnection(gocql.Quorum, "catalog", "scylla-node1", "scylla-node2", "scylla-node3")
+	session, err := scyllaCluster.GetConnection()
 	if err != nil {
-		panic(err)
+		logger.Fatal("unable to connect to scylla", zap.Error(err))
 	}
+	defer session.Close()
 
-	repos := repository.NewRepositories(postgresDB)
+	repos := repository.NewRepositories(session)
 
 	integrations, err := integration.NewIntegrations(cfg)
 	if err != nil {

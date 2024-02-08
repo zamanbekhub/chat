@@ -1,13 +1,15 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"github.com/gocql/gocql"
+)
 
 type Repository struct {
 	Chat Chat
 }
 
 func NewRepositories(
-	db *gorm.DB,
+	db *gocql.Session,
 ) *Repository {
 	return &Repository{
 		Chat: NewChatDB(db),

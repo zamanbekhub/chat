@@ -3,56 +3,58 @@ package repository
 import (
 	"chat/internal/model"
 	"context"
-	"errors"
-	"gorm.io/gorm"
+	"github.com/gocql/gocql"
+	"github.com/scylladb/gocqlx"
+	"github.com/scylladb/gocqlx/table"
 )
 
 type Chat interface {
-	Get(ctx context.Context, params GetChatParams) (user model.Chat, err error)
-	Create(ctx context.Context, user model.Chat) (model.Chat, error)
+	Get(ctx context.Context, data *model.Chat) (*model.Chat, error)
+	Create(ctx context.Context, data *model.Chat) error
 }
 
 type ChatDB struct {
-	db *gorm.DB
+	session *gocql.Session
+	model   *table.Table
 }
 
-func NewChatDB(db *gorm.DB) *ChatDB {
+func NewChatDB(session *gocql.Session) *ChatDB {
 	return &ChatDB{
-		db: db,
+		session: session,
+		model:   model.NewChatTable(),
 	}
 }
 
-func (r *ChatDB) Create(ctx context.Context, chat model.Chat) (model.Chat, error) {
-	err := r.db.WithContext(ctx).Create(&chat).Error
+func (r *ChatDB) Create(ctx context.Context, data *model.Chat) error {
+	insertStatement, insertNames := r.model.Insert()
+	err := gocqlx.Query(r.session.Query(insertStatement), insertNames).
+		WithContext(ctx).
+		BindStruct(data).
+		ExecRelease()
+
 	if err != nil {
-		return chat, err
+		return err
 	}
 
-	return chat, nil
+	return nil
 }
 
-func (r *ChatDB) Get(
-	ctx context.Context,
-	params GetChatParams,
-) (chat model.Chat, err error) {
-	query := r.db.Model(&model.Chat{})
+func (r *ChatDB) Get(ctx context.Context, data *model.Chat) (*model.Chat, error) {
+	var result []model.Chat
 
-	if params.ChatID != nil {
-		query = query.Where(`chat_id = ?`, *params.ChatID)
-	}
+	selectStatement, selectNames := r.model.Get()
+	err := gocqlx.Query(r.session.Query(selectStatement), selectNames).
+		WithContext(ctx).
+		BindStruct(data).
+		SelectRelease(&result)
 
-	err = query.First(&chat).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Chat{}, err
-		}
-
-		return model.Chat{}, err
+		return nil, err
 	}
 
-	return chat, nil
-}
+	if len(result) == 0 {
+		return &result[0], nil
+	}
 
-type GetChatParams struct {
-	ChatID *uint
+	return nil, nil
 }

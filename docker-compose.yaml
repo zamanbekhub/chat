@@ -1,26 +1,53 @@
 version: "3"
+
 services:
-  postgres:
-    image: postgres:14
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=chat
-    ports:
-      - "5432:5432"
+
+  scylla-node1:
+    container_name: scylla-node1
+    image: scylladb/scylla:5.2.0
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
     volumes:
-      - chat-volume:/var/lib/postgresql/data
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-#      - redis
-    entrypoint:
-      ["postgres:5433", "--"]
-    command: [ "/app/main" ]
-volumes:
-  chat-volume:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+    networks:
+      web:
+
+  scylla-node2:
+    container_name: scylla-node2
+    image: scylladb/scylla:5.2.0
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+    networks:
+      web:
+
+  scylla-node3:
+    container_name: scylla-node3
+    image: scylladb/scylla:5.2.0
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+    networks:
+      web:
+
+  #  api:
+  #    build:
+  #      context: .
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - "8080:8080"
+  #    depends_on:
+  #      - postgres
+  ##      - redis
+  #    entrypoint:
+  #      ["postgres:5433", "--"]
+  #    command: [ "/app/main" ]
+
+networks:
+  web:
+    driver: bridge
