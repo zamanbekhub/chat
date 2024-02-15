@@ -17,7 +17,7 @@ func (h *Handler) initMessage(v1 *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param data body schema.MessagePush true "Новое сообщение"
-// @Success 200 {object} schema.Response[schema.Empty]
+// @Success 200 {object} schema.Response[model.Message]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @tags message
 // @Router /api/v1/message/push [post]
@@ -27,9 +27,9 @@ func (h *Handler) PushMessage(c *gin.Context) error {
 		return err
 	}
 
-	err := h.services.Message.Push(c.Request.Context(), data)
+	message, err := h.services.Message.Push(c.Request.Context(), data)
 	if err != nil {
 		return err
 	}
-	return schema.Respond(schema.Empty{}, c)
+	return schema.Respond(message, c)
 }

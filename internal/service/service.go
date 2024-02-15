@@ -13,6 +13,6 @@ type Services struct {
 func NewServices(repos *repository.Repository, integrations *integration.Integrations) *Services {
 	return &Services{
 		Chat:    NewChatService(repos.Chat, repos.UserChatRoleRepo),
-		Message: NewMessageService(integrations.CentrifugoServer),
+		Message: NewMessageService(integrations.CentrifugoServer, repos.MessageRepo, repos.UserChatRoleRepo),
 	}
 }

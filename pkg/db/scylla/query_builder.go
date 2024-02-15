@@ -100,7 +100,7 @@ func (queryBuilder *QueryBuilderImpl[T]) Get(ctx context.Context, dataToGet *T) 
 	return nil, nil
 }
 
-func NewQueryBuider[T any](model table.Table, session *gocql.Session) *QueryBuilderImpl[T] {
+func NewQueryBuilder[T any](model table.Table, session *gocql.Session) *QueryBuilderImpl[T] {
 	return &QueryBuilderImpl[T]{
 		model,
 		session,

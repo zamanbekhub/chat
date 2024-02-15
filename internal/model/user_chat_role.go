@@ -13,10 +13,10 @@ func NewUserChatRoleTable() table.Table {
 	m := table.Metadata{
 		Name: "user_chat_role",
 		Columns: []string{
-			"chat_id", "user_id", "role_id",
+			"user_id", "chat_id", "role_id",
 			"created_at", "updated_at",
 		},
-		PartKey: []string{"chat_id"},
+		PartKey: []string{"user_id", "chat_id"},
 	}
 	return *table.New(m)
 }

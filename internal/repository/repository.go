@@ -9,15 +9,18 @@ import (
 type Repository struct {
 	Chat             Chat
 	UserChatRoleRepo scylla.QueryBuilder[model.UserChatRole]
+	MessageRepo      scylla.QueryBuilder[model.Message]
 }
 
 func NewRepositories(
 	session *gocql.Session,
 ) *Repository {
-	userChatRoleRepo := scylla.NewQueryBuider[model.UserChatRole](model.NewUserChatRoleTable(), session)
+	userChatRoleRepo := scylla.NewQueryBuilder[model.UserChatRole](model.NewUserChatRoleTable(), session)
+	messageRepo := scylla.NewQueryBuilder[model.Message](model.NewMessageTable(), session)
 
 	return &Repository{
 		Chat:             NewChatDB(session),
 		UserChatRoleRepo: userChatRoleRepo,
+		MessageRepo:      messageRepo,
 	}
 }

@@ -1,6 +1,8 @@
 package schema
 
 type MessagePush struct {
+	ChatID  string `json:"chatID"`
+	UserID  string `json:"userID"`
 	Channel string `json:"channel"`
-	Message string `json:"message"`
+	Text    string `json:"text"`
 }
