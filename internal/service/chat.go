@@ -10,8 +10,8 @@ import (
 
 type Chat interface {
 	Get(ctx context.Context, chatID string) (*model.Chat, error)
-	GetAllChats(ctx context.Context, userID string) ([]model.UserChatRole, error)
-	Create(ctx context.Context, data schema.ChatCreate) (model.Chat, error)
+	GetAllChats(ctx context.Context, userID string) ([]schema.GetUserChat, error)
+	Create(ctx context.Context, data schema.CreateChat) (model.Chat, error)
 }
 
 type ChatService struct {
@@ -37,18 +37,18 @@ func (s *ChatService) Get(ctx context.Context, chatID string) (*model.Chat, erro
 	return chat, nil
 }
 
-func (s *ChatService) GetAllChats(ctx context.Context, userID string) ([]model.UserChatRole, error) {
-	userChats, err := s.userChatRoleRepo.Select(ctx, &model.UserChatRole{
+func (s *ChatService) GetAllChats(ctx context.Context, userID string) ([]schema.GetUserChat, error) {
+	_, err := s.userChatRoleRepo.Select(ctx, &model.UserChatRole{
 		UserID: userID,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return userChats, nil
+	return []schema.GetUserChat{}, nil
 }
 
-func (s *ChatService) Create(ctx context.Context, data schema.ChatCreate) (model.Chat, error) {
+func (s *ChatService) Create(ctx context.Context, data schema.CreateChat) (model.Chat, error) {
 	chat := model.Chat{
 		Name:        data.Name,
 		Description: data.Description,
