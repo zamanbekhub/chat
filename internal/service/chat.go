@@ -3,6 +3,7 @@ package service
 import (
 	"chat/internal/model"
 	"chat/internal/repository"
+	"chat/internal/schema"
 	"chat/pkg/db/scylla"
 	"context"
 )
@@ -10,7 +11,7 @@ import (
 type Chat interface {
 	Get(ctx context.Context, chatID string) (*model.Chat, error)
 	GetAllChats(ctx context.Context, userID string) ([]model.UserChatRole, error)
-	//Create(ctx context.Context, data schema.ChatCreate) (model.Chat, error)
+	Create(ctx context.Context, data schema.ChatCreate) (model.Chat, error)
 }
 
 type ChatService struct {
@@ -47,15 +48,16 @@ func (s *ChatService) GetAllChats(ctx context.Context, userID string) ([]model.U
 	return userChats, nil
 }
 
-//func (s *ChatService) Create(ctx context.Context, data schema.ChatCreate) (model.Chat, error) {
-//	chat, err := s.chatRepo.Create(ctx, &model.Chat{
-//		ChatID:        data.C,
-//		Description: data.Description,
-//		TypeCode:    data.TypeCode,
-//	})
-//	if err != nil {
-//		return model.Chat{}, err
-//	}
-//
-//	return chat, nil
-//}
+func (s *ChatService) Create(ctx context.Context, data schema.ChatCreate) (model.Chat, error) {
+	chat := model.Chat{
+		Name:        data.Name,
+		Description: data.Description,
+		TypeCode:    data.TypeCode,
+	}
+	err := s.chatRepo.Create(ctx, &chat)
+	if err != nil {
+		return model.Chat{}, err
+	}
+
+	return chat, nil
+}

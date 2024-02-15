@@ -10,7 +10,7 @@ func (h *Handler) initChat(v1 *gin.RouterGroup) {
 	group := v1.Group("/chat")
 	group.GET("", middleware.GinErrorHandle(h.GetChat))
 	group.GET("/all", middleware.GinErrorHandle(h.GetUserChats))
-	//group.POST("", middleware.GinErrorHandle(h.CreateChat))
+	group.POST("", middleware.GinErrorHandle(h.CreateChat))
 }
 
 // GetChat
@@ -49,25 +49,25 @@ func (h *Handler) GetUserChats(c *gin.Context) error {
 	return schema.Respond(chat, c)
 }
 
-//// CreateChat
-//// WhoAmi godoc
-//// @Summary Создание пользователя
-//// @Accept json
-//// @Produce json
-//// @Param data body schema.ChatCreate true "Создание пользователыя"
-//// @Success 200 {object} schema.Response[model.Chat]
-//// @Failure 400 {object} schema.Response[schema.Empty]
-//// @tags chat
-//// @Router /api/v1/chat [post]
-//func (h *Handler) CreateChat(c *gin.Context) error {
-//	var data schema.ChatCreate
-//	if err := c.BindJSON(&data); err != nil {
-//		return err
-//	}
-//
-//	chat, err := h.services.Chat.Create(c.Request.Context(), data)
-//	if err != nil {
-//		return err
-//	}
-//	return schema.Respond(chat, c)
-//}
+// CreateChat
+// WhoAmi godoc
+// @Summary Создание пользователя
+// @Accept json
+// @Produce json
+// @Param data body schema.ChatCreate true "Создание чата"
+// @Success 200 {object} schema.Response[model.Chat]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @tags chat
+// @Router /api/v1/chat [post]
+func (h *Handler) CreateChat(c *gin.Context) error {
+	var data schema.ChatCreate
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	chat, err := h.services.Chat.Create(c.Request.Context(), data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(chat, c)
+}
