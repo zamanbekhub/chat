@@ -10,7 +10,8 @@ import (
 )
 
 type Message interface {
-	Push(ctx context.Context, data schema.MessagePush) (*model.Message, error)
+	GetMessageList(ctx context.Context, chatID string) ([]model.Message, error)
+	Push(ctx context.Context, data schema.MessagePush) (model.Message, error)
 }
 
 type MessageService struct {
@@ -31,17 +32,28 @@ func NewMessageService(
 	}
 }
 
-func (s *MessageService) Push(ctx context.Context, data schema.MessagePush) (*model.Message, error) {
+func (s *MessageService) GetMessageList(ctx context.Context, chatID string) ([]model.Message, error) {
+	messages, err := s.messageRepo.Select(ctx, &model.Message{
+		ChatID: chatID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}
+
+func (s *MessageService) Push(ctx context.Context, data schema.MessagePush) (model.Message, error) {
 	// TODO Validate User and Chat Relation
 	userChatRole, err := s.userChatRoleRepo.Get(ctx, &model.UserChatRole{
 		UserID: data.UserID,
 		ChatID: data.ChatID,
 	})
 	if err != nil {
-		return nil, err
+		return model.Message{}, err
 	}
 	if userChatRole == nil {
-		return nil, fmt.Errorf("there is not chat to current user")
+		return model.Message{}, fmt.Errorf("there is not chat to current user")
 	}
 
 	message := model.Message{
@@ -54,13 +66,13 @@ func (s *MessageService) Push(ctx context.Context, data schema.MessagePush) (*mo
 	}
 	err = s.messageRepo.Insert(ctx, &message)
 	if err != nil {
-		return &message, err
+		return message, err
 	}
 
 	err = s.centrifugServerClient.Push(ctx, data.Channel, data.Text)
 	if err != nil {
-		return &message, err
+		return message, err
 	}
 
-	return &message, nil
+	return message, nil
 }

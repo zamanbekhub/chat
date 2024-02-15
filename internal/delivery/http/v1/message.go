@@ -8,7 +8,26 @@ import (
 
 func (h *Handler) initMessage(v1 *gin.RouterGroup) {
 	group := v1.Group("/message")
+	group.GET("/list", middleware.GinErrorHandle(h.PushMessage))
 	group.POST("/push", middleware.GinErrorHandle(h.PushMessage))
+}
+
+// GetMessageList
+// WhoAmi godoc
+// @Summary Получить сообщение чата
+// @Accept json
+// @Produce json
+// @Param chat_id query string true "Chat ID"
+// @Success 200 {object} schema.Response[[]model.Message]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @tags message
+// @Router /api/v1/message/list [get]
+func (h *Handler) GetMessageList(c *gin.Context) error {
+	messages, err := h.services.Message.GetMessageList(c.Request.Context(), c.Query("chat_id"))
+	if err != nil {
+		return err
+	}
+	return schema.Respond(messages, c)
 }
 
 // PushMessage
